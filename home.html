@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Coming Soon</title>
+
+	<!-- Bootstrap CSS (CDN) -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+	<style>
+		/* Minimal custom styles */
+		body {
+			min-height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+			color: #f8fafc;
+			font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+			padding: 2rem;
+		}
+		.card-coming {
+			max-width: 720px;
+			width: 100%;
+			background: rgba(255,255,255,0.06);
+			backdrop-filter: blur(6px);
+			border: 1px solid rgba(255,255,255,0.06);
+			box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+		}
+		.brand {
+			letter-spacing: 0.08em;
+			font-weight: 600;
+		}
+		.countdown {
+			display: flex;
+			justify-content: center;
+			gap: 0.75rem;
+			flex-wrap: wrap;
+			margin-top: 1.25rem;
+		}
+		.countdown .unit {
+			min-width: 80px;
+			background: rgba(255,255,255,0.03);
+			border-radius: 8px;
+			padding: 0.6rem 0.8rem;
+			text-align: center;
+		}
+		.countdown .value {
+			font-size: 1.45rem;
+			font-weight: 700;
+			line-height: 1;
+		}
+		.countdown .label {
+			font-size: 0.75rem;
+			opacity: 0.8;
+			margin-top: 0.15rem;
+		}
+		.note {
+			opacity: 0.85;
+		}
+		@media (max-width: 420px) {
+			.countdown .unit { min-width: 60px; padding: 0.5rem 0.6rem; }
+			.countdown .value { font-size: 1.15rem; }
+		}
+	</style>
+</head>
+<body>
+	<!-- Set data-target to an ISO date/time string like "2025-12-31T00:00:00" OR omit to use 7 days from now -->
+	<div class="card card-coming p-4 p-md-5" data-target="">
+		<div class="d-flex align-items-center mb-3">
+			<div class="me-3">
+				<div class="bg-white rounded-circle" style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;color:#0f172a;font-weight:700;">
+					CS
+				</div>
+			</div>
+			<div>
+				<div class="brand h5 mb-0">Company Name</div>
+				<div class="text-muted small">New site &amp; features coming soon</div>
+			</div>
+		</div>
+
+		<h1 class="display-6 mb-2">We're launching soon</h1>
+		<p class="lead note mb-3">We're putting the finishing touches on our website. Sign up to be notified when we go live.</p>
+
+		<div id="countdown" class="countdown" aria-live="polite">
+			<div class="unit">
+				<div id="days" class="value">--</div>
+				<div class="label">Days</div>
+			</div>
+			<div class="unit">
+				<div id="hours" class="value">--</div>
+				<div class="label">Hours</div>
+			</div>
+			<div class="unit">
+				<div id="minutes" class="value">--</div>
+				<div class="label">Minutes</div>
+			</div>
+			<div class="unit">
+				<div id="seconds" class="value">--</div>
+				<div class="label">Seconds</div>
+			</div>
+		</div>
+
+		<div class="mt-4 d-flex gap-2">
+			<!-- Simple email capture placeholder -->
+			<input type="email" class="form-control form-control-lg" placeholder="Email address (optional)" aria-label="Email address">
+			<button class="btn btn-primary btn-lg">Notify me</button>
+		</div>
+
+		<div id="liveMessage" class="mt-3 text-center small fw-semibold" style="display:none;">We're live!</div>
+	</div>
+
+	<!-- Bootstrap JS (popper included) -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+	<script>
+		// Read target from data-target attribute; if empty, default to 7 days from now
+		(function () {
+			const card = document.querySelector('.card-coming');
+			let targetAttr = (card && card.getAttribute('data-target') || '').trim();
+			let targetDate;
+			if (targetAttr) {
+				const parsed = new Date(targetAttr);
+				if (!isNaN(parsed)) targetDate = parsed;
+			}
+			if (!targetDate) {
+				targetDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // default 7 days
+			}
+
+			const els = {
+				days: document.getElementById('days'),
+				hours: document.getElementById('hours'),
+				minutes: document.getElementById('minutes'),
+				seconds: document.getElementById('seconds'),
+				liveMessage: document.getElementById('liveMessage'),
+				countdown: document.getElementById('countdown')
+			};
+
+			function pad(n) { return n.toString().padStart(2, '0'); }
+
+			function update() {
+				const now = new Date();
+				let diff = Math.max(0, targetDate - now);
+				if (diff <= 0) {
+					// reached
+					els.countdown.style.display = 'none';
+					els.liveMessage.style.display = 'block';
+					clearInterval(timer);
+					return;
+				}
+				const secs = Math.floor(diff / 1000);
+				const days = Math.floor(secs / (24*3600));
+				const hours = Math.floor((secs % (24*3600)) / 3600);
+				const minutes = Math.floor((secs % 3600) / 60);
+				const seconds = secs % 60;
+
+				els.days.textContent = days;
+				els.hours.textContent = pad(hours);
+				els.minutes.textContent = pad(minutes);
+				els.seconds.textContent = pad(seconds);
+			}
+
+			update();
+			const timer = setInterval(update, 1000);
+		})();
+	</script>
+</body>
+</html>
